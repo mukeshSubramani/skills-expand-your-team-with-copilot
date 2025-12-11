@@ -569,6 +569,15 @@ document.addEventListener("DOMContentLoaded", () => {
         `
         }
       </div>
+      <div class="share-buttons-container">
+        <div class="share-label">Share this activity:</div>
+        <div class="share-buttons">
+          <button class="share-button twitter" data-activity="${name}" data-share="twitter" title="Share on Twitter">𝕏</button>
+          <button class="share-button facebook" data-activity="${name}" data-share="facebook" title="Share on Facebook">f</button>
+          <button class="share-button whatsapp" data-activity="${name}" data-share="whatsapp" title="Share on WhatsApp">📱</button>
+          <button class="share-button email" data-activity="${name}" data-share="email" title="Share via Email">✉</button>
+        </div>
+      </div>
     `;
 
     // Add click handlers for delete buttons
@@ -586,6 +595,15 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       }
     }
+
+    // Add click handlers for share buttons
+    const shareButtons = activityCard.querySelectorAll(".share-button");
+    shareButtons.forEach((button) => {
+      button.addEventListener("click", (event) => {
+        event.preventDefault();
+        handleShare(button.dataset.activity, button.dataset.share);
+      });
+    });
 
     activitiesList.appendChild(activityCard);
   }
@@ -854,6 +872,53 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("Error signing up:", error);
     }
   });
+
+  // Handle social sharing
+  function handleShare(activityName, platform) {
+    const activity = allActivities[activityName];
+    if (!activity) {
+      console.error("Activity not found:", activityName);
+      return;
+    }
+
+    // Create shareable text
+    const pageUrl = window.location.origin + window.location.pathname;
+    const activityType = getActivityType(activityName, activity.description);
+    const typeInfo = activityTypes[activityType];
+    const schedule = formatSchedule(activity);
+    
+    const shareText = `Check out this activity at Mergington High School: ${activityName}!\n\n${activity.description}\n\nSchedule: ${schedule}`;
+    const shareTitle = `${activityName} - Mergington High School`;
+    
+    let shareUrl;
+    
+    switch (platform) {
+      case "twitter":
+        shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(pageUrl)}`;
+        window.open(shareUrl, "_blank", "width=550,height=420");
+        break;
+        
+      case "facebook":
+        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}&quote=${encodeURIComponent(shareText)}`;
+        window.open(shareUrl, "_blank", "width=550,height=420");
+        break;
+        
+      case "whatsapp":
+        shareUrl = `https://wa.me/?text=${encodeURIComponent(shareText + "\n" + pageUrl)}`;
+        window.open(shareUrl, "_blank");
+        break;
+        
+      case "email":
+        const emailSubject = encodeURIComponent(shareTitle);
+        const emailBody = encodeURIComponent(shareText + "\n\nView more activities at: " + pageUrl);
+        shareUrl = `mailto:?subject=${emailSubject}&body=${emailBody}`;
+        window.location.href = shareUrl;
+        break;
+        
+      default:
+        console.error("Unknown share platform:", platform);
+    }
+  }
 
   // Expose filter functions to window for future UI control
   window.activityFilters = {
