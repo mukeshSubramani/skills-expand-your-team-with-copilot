@@ -442,6 +442,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Apply difficulty filter on client side
       // When "All" is selected (currentDifficulty === ""), only show activities without difficulty
+      // When a specific difficulty is selected, the backend already filtered for us
       if (currentDifficulty === "" && details.difficulty) {
         return;
       }
