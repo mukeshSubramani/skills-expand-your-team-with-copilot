@@ -574,7 +574,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <div class="share-buttons">
           <button class="share-button twitter" data-activity="${name}" data-share="twitter" title="Share on Twitter">𝕏</button>
           <button class="share-button facebook" data-activity="${name}" data-share="facebook" title="Share on Facebook">f</button>
-          <button class="share-button whatsapp" data-activity="${name}" data-share="whatsapp" title="Share on WhatsApp">📱</button>
+          <button class="share-button whatsapp" data-activity="${name}" data-share="whatsapp" title="Share on WhatsApp">W</button>
           <button class="share-button email" data-activity="${name}" data-share="email" title="Share via Email">✉</button>
         </div>
       </div>
@@ -878,13 +878,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const activity = allActivities[activityName];
     if (!activity) {
       console.error("Activity not found:", activityName);
+      showMessage("Unable to share activity. Please try again.", "error");
       return;
     }
 
     // Create shareable text
     const pageUrl = window.location.origin + window.location.pathname;
-    const activityType = getActivityType(activityName, activity.description);
-    const typeInfo = activityTypes[activityType];
     const schedule = formatSchedule(activity);
     
     const shareText = `Check out this activity at Mergington High School: ${activityName}!\n\n${activity.description}\n\nSchedule: ${schedule}`;
@@ -917,6 +916,7 @@ document.addEventListener("DOMContentLoaded", () => {
         
       default:
         console.error("Unknown share platform:", platform);
+        showMessage("Unable to share to this platform. Please try again.", "error");
     }
   }
 
